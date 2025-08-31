@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  # Эта строка добавляет кнопку для ручного запуска
   workflow_dispatch:
 
 jobs:
@@ -26,25 +25,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # --- Инструменты сборки для конкретных платформ ---
       - name: Set up MSVC for Windows
-        # Этот шаг запустится ТОЛЬКО на Windows
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1 # <-- ИСПРАВЛЕННАЯ СТРОКА
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install build dependencies on Linux
-        # Этот шаг запустится ТОЛЬКО на Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
-      # --- Общие шаги сборки для всех платформ ---
       - name: Install Python build dependencies
         run: |
           python -m pip install --upgrade pip
           pip install wheel build cython numpy
 
       - name: Build wheel
-        # Эта команда скомпилирует wheel для текущей ОС и версии Python
         run: python -m build --wheel
 
       - name: Store artifact
