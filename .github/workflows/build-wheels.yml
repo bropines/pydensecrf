@@ -30,9 +30,7 @@ jobs:
       - name: Set up MSVC for Windows
         # Этот шаг запустится ТОЛЬКО на Windows
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msvc-dev@v4
-        with:
-          architecture: 'x64'
+        uses: ilammy/msvc-dev-cmd@v1 # <-- ИСПРАВЛЕННАЯ СТРОКА
 
       - name: Install build dependencies on Linux
         # Этот шаг запустится ТОЛЬКО на Linux
