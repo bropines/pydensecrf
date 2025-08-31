@@ -1,11 +1,10 @@
-# .github/workflows/build-wheels.yml
-
 name: Build Python Wheels
 
 on:
   push:
     branches:
       - main
+  # Эта строка добавляет кнопку для ручного запуска
   workflow_dispatch:
 
 jobs:
@@ -27,28 +26,32 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # --- Platform-specific build tools ---
+      # --- Инструменты сборки для конкретных платформ ---
       - name: Set up MSVC for Windows
+        # Этот шаг запустится ТОЛЬКО на Windows
         if: runner.os == 'Windows'
         uses: microsoft/setup-msvc-dev@v4
         with:
           architecture: 'x64'
 
       - name: Install build dependencies on Linux
+        # Этот шаг запустится ТОЛЬКО на Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
-      # --- Common build steps ---
+      # --- Общие шаги сборки для всех платформ ---
       - name: Install Python build dependencies
         run: |
           python -m pip install --upgrade pip
           pip install wheel build cython numpy
 
       - name: Build wheel
+        # Эта команда скомпилирует wheel для текущей ОС и версии Python
         run: python -m build --wheel
 
-      - name: Upload artifact
+      - name: Store artifact
         uses: actions/upload-artifact@v4
         with:
+          # Имя артефакта будет включать ОС и версию Python для удобства
           name: wheels-${{ matrix.os }}-py${{ matrix.python-version }}
           path: dist/*.whl
